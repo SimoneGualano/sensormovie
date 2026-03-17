@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Test Sensori Movimento</title>
+<style>
+  body { margin:0; overflow:hidden; background:#111; display:flex; justify-content:center; align-items:center; height:100vh; }
+  #circle { width:50px; height:50px; border-radius:50%; background: red; position:absolute; top:50%; left:50%; transform: translate(-50%, -50%); }
+</style>
+</head>
+<body>
+<div id="circle"></div>
+
+<script>
+let circle = document.getElementById("circle");
+let width = window.innerWidth;
+let height = window.innerHeight;
+
+function handleMotion(event) {
+    let x = event.accelerationIncludingGravity.x || 0;
+    let y = event.accelerationIncludingGravity.y || 0;
+
+    // Muove il cerchio
+    let cx = Math.min(Math.max(width/2 + x*20, 0), width-50);
+    let cy = Math.min(Math.max(height/2 - y*20, 0), height-50);
+
+    circle.style.left = cx + "px";
+    circle.style.top = cy + "px";
+}
+
+if (typeof DeviceMotionEvent.requestPermission === 'function') {
+    // iOS 13+
+    DeviceMotionEvent.requestPermission()
+      .then(response => {
+        if(response === 'granted') {
+            window.addEventListener('devicemotion', handleMotion);
+        } else {
+            alert("Permesso negato");
+        }
+      })
+      .catch(console.error);
+} else {
+    // Android o browser moderni
+    window.addEventListener('devicemotion', handleMotion);
+}
+</script>
+</body>
+</html>
